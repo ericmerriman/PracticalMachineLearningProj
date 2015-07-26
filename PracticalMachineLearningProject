@@ -1,0 +1,27 @@
+library(AppliedPredictiveModeling)
+library(caret)
+library(rattle)
+library(rpart.plot)
+library(randomForest)
+
+###Download and save, and read data####
+url_trn <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+file_dest_trn <- "pml-training.csv"
+url_raw_testing <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+file_dest_tst <- "pml-testing.csv"
+training <- "pml-training.csv"
+testing <- "pml-testing.csv"
+trn <- read.csv(training)
+tst <- read.csv(testing)
+
+####Train W/ Cross Validation######
+set.seed(742)
+fit <- train(trn$classe ~ ., method="rf", preProcess=c("center", "scale"), trControl=trainControl(method = "cv", number = 4), data=trn)
+print(fit, digits=4)
+
+####Print Confusion Matrix####
+prdctns <- predict(fit, newdata=tst)
+print(confusionMatrix(predictions, tst$classe), digits=5)
+
+####Print Predictions######
+print(predict(fit, newdata=tst))
